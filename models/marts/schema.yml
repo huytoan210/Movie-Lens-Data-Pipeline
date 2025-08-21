@@ -1,0 +1,161 @@
+version: 2
+
+models:
+  # -----------------------
+  # Dim Date
+  # -----------------------
+  - name: dim_date
+    description: "Dimension table for dates, contains details like day, month, year, and weekend flag"
+    columns:
+      - name: date_id
+        description: "Unique identifier for each date"
+        tests:
+          - unique: {}
+          - not_null: {}
+      - name: day
+        tests:
+          - not_null: {}
+      - name: month
+        tests:
+          - not_null: {}
+      - name: quarter
+        tests:
+          - not_null: {}
+      - name: year
+        tests:
+          - not_null: {}
+      - name: day_of_week
+        tests:
+          - not_null: {}
+      - name: is_weekend
+        tests:
+          - not_null: {}
+
+  # -----------------------
+  # Dim User
+  # -----------------------
+  - name: dim_user
+    description: "Dimension table for users, contains user details and rating statistics"
+    columns:
+      - name: user_id
+        tests:
+          - unique: {}
+          - not_null: {}
+      - name: first_activity_date
+        tests:
+          - not_null: {}
+      - name: last_activity_date
+        tests:
+          - not_null: {}
+      - name: rating_count
+        tests:
+          - not_null: {}
+
+  # -----------------------
+  # Dim Movie
+  # -----------------------
+  - name: dim_movie
+    description: "Dimension table for movies, contains movie details"
+    columns:
+      - name: movie_id
+        tests:
+          - unique: {}
+          - not_null: {}
+      - name: title
+        tests:
+          - not_null: {}
+
+  # -----------------------
+  # Dim Genre
+  # -----------------------
+  - name: dim_genre
+    description: "Dimension table for genres"
+    columns:
+      - name: genre_id
+        tests:
+          - unique: {}
+          - not_null: {}
+      - name: genre_name
+        tests:
+          - not_null: {}
+
+  # -----------------------
+  # Bridge Movie-Genre
+  # -----------------------
+  - name: bridge_movie_genre
+    description: "Bridge table between movies and genres"
+    columns:
+      - name: movie_id
+        tests:
+          - not_null: {}
+          - relationships:
+              to: ref('dim_movie')
+              field: movie_id
+      - name: genre_id
+        tests:
+          - not_null: {}
+          - relationships:
+              to: ref('dim_genre')
+              field: genre_id
+
+  # -----------------------
+  # Fact Ratings
+  # -----------------------
+  - name: fct_ratings
+    description: "Fact table for ratings provided by users for movies"
+    columns:
+      - name: user_id
+        tests:
+          - not_null: {}
+          - relationships:
+              to: ref('dim_user')
+              field: user_id
+      - name: movie_id
+        tests:
+          - not_null: {}
+          - relationships:
+              to: ref('dim_movie')
+              field: movie_id
+      - name: rating_value
+        tests:
+          - not_null: {}
+      - name: rating_ts
+        tests:
+          - not_null: {}
+      - name: rating_date
+        tests:
+          - not_null: {}
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+
+  # -----------------------
+  # Fact Tags
+  # -----------------------
+  - name: fct_tags
+    description: "Fact table for tags applied by users to movies"
+    columns:
+      - name: user_id
+        tests:
+          - not_null: {}
+          - relationships:
+              to: ref('dim_user')
+              field: user_id
+      - name: movie_id
+        tests:
+          - not_null: {}
+          - relationships:
+              to: ref('dim_movie')
+              field: movie_id
+      - name: tag
+        tests:
+          - not_null: {}
+      - name: tag_ts
+        tests:
+          - not_null: {}
+      - name: tag_date
+        tests:
+          - not_null: {}
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
